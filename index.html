@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Membresías</title>
+</head>
+<body>
+    <h1>Consulta de Membresías</h1>
+    <form id="consultaForm">
+        <label for="ids">Introduce los IDs separados por coma:</label><br>
+        <input type="text" id="ids" name="ids"><br>
+        <button type="submit">Buscar</button>
+    </form>
+    <div id="tablaDatos"></div>
+
+    <script>
+        document.getElementById('consultaForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const ids = formData.get('ids');
+            const response = await fetch('/buscar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `ids=${ids}`
+            });
+            const data = await response.json();
+            const tableHtml = `
+                <table border="1">
+                    <tr>
+                        <th>Especialidad</th>
+                        <th>Folio</th>
+                    </tr>
+                    ${data.map(({ especialidad, folio }) => `
+                        <tr>
+                            <td>${especialidad}</td>
+                            <td>${folio}</td>
+                        </tr>
+                    `).join('')}
+                </table>
+            `;
+            document.getElementById('tablaDatos').innerHTML = tableHtml;
+        });
+    </script>
+</body>
+</html>
