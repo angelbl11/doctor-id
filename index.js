@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 import express from 'express';
+import path from 'path';
 const app = express();
 const port = 3000;
 
@@ -24,21 +25,23 @@ async function obtenerDatosMembresia(idmemb) {
     };
 
     try {
-        const response = await fetch(`http://consulta.vhs.com.mx:81/galaxia/relumia_web/modules/mod-datos-membresias/datos-membresia.php?idmemb=${idmemb}&idMed=&nombreMed=&valSINO=`, requestOptions);
+        const response = await fetch(`http://consulta.vhs.com.mx:81/galaxia/relumia_web/modules/mod-datos-membresias/datos-membresia.php?idmemb=${idmemb}`, requestOptions);
         const htmlResponse = await response.text();
         const $ = cheerio.load(htmlResponse);
         const especialidad = $('strong').filter((index, element) => $(element).text().trim() === 'ESPECIALIDAD').next().text().trim();
         const folio = $('strong').filter((index, element) => $(element).text().trim() === 'FOLIO:').next().text().trim();
 
-        return { nombre, especialidad, folio };
+        return { especialidad, folio };
     } catch (error) {
         console.error(`Error al obtener los datos de la membresía para idmemb ${idmemb}:`, error);
         return null;
     }
 }
 
-
-
+// Ruta para la página HTML
+app.get('/', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'index.html'));
+});
 
 // Ruta para manejar el envío del formulario
 app.post('/buscar', async (req, res) => {
