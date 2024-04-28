@@ -41,7 +41,7 @@ async function obtenerDatosMembresia(idmemb) {
 
 // Ruta para la página HTML
 app.get('/', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'index.html'));
+    res.sendFile(path.join(process.cwd(), '../index.html'));
 });
 
 // Ruta para manejar el envío del formulario
