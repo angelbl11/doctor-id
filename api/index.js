@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import cheerio from 'cheerio';
+import { parse } from 'node-html-parser';
 import express from 'express';
 import path from 'path';
 const app = express();
@@ -27,14 +27,17 @@ async function obtenerDatosMembresia(idmemb) {
     try {
         const response = await fetch(`http://consulta.vhs.com.mx:81/galaxia/relumia_web/modules/mod-datos-membresias/datos-membresia.php?idmemb=${idmemb}`, requestOptions);
         const htmlResponse = await response.text();
-        const $ = cheerio.load(htmlResponse);
-        const especialidad = $('strong').filter((index, element) => $(element).text().trim() === 'ESPECIALIDAD').next().text().trim();
-        const folio = $('strong').filter((index, element) => $(element).text().trim() === 'FOLIO:').next().text().trim();
+        const root = parse(htmlResponse);
+        const especialidadNode = root.querySelector('strong:contains("ESPECIALIDAD")');
+        const folioNode = root.querySelector('strong:contains("FOLIO:")');
+
+        const especialidad = especialidadNode ? especialidadNode.nextElementSibling.text.trim() : 'No disponible';
+        const folio = folioNode ? folioNode.nextElementSibling.text.trim() : 'No disponible';
 
         return { especialidad, folio };
     } catch (error) {
         console.error(`Error al obtener los datos de la membresía para idmemb ${idmemb}:`, error);
-        return null;
+        return { especialidad: 'Error', folio: 'Error' };
     }
 }
 
