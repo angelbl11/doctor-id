@@ -1,8 +1,6 @@
-import fs from 'fs';
 import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 import express from 'express';
-import path from 'path';
 const app = express();
 const port = 3000;
 
@@ -39,10 +37,8 @@ async function obtenerDatosMembresia(idmemb) {
     }
 }
 
-// Ruta para la página HTML
-app.get('/', (req, res) => {
-    res.sendFile(path.join(process.cwd(), '../index.html'));
-});
+
+
 
 // Ruta para manejar el envío del formulario
 app.post('/buscar', async (req, res) => {
